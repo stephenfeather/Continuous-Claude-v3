@@ -36,11 +36,15 @@ DOCKER_COMPOSE_FILE = DOCKER_DIR / "docker-compose.yml"
 MIGRATIONS_DIR = PROJECT_ROOT / "scripts" / "migrations"
 
 
-async def start_docker_stack(compose_file: Path | None = None) -> dict[str, Any]:
+async def start_docker_stack(
+    compose_file: Path | None = None,
+    env_file: Path | None = None,
+) -> dict[str, Any]:
     """Start the Docker Compose stack.
 
     Args:
         compose_file: Path to docker-compose.yml (defaults to project root)
+        env_file: Path to .env file for variable substitution
 
     Returns:
         dict with keys: success, error (if failed), output
@@ -50,14 +54,15 @@ async def start_docker_stack(compose_file: Path | None = None) -> dict[str, Any]
     if not compose_path.exists():
         return {"success": False, "error": f"Docker compose file not found: {compose_path}"}
 
+    # Build command with optional --env-file
+    cmd = ["docker", "compose", "-f", str(compose_path)]
+    if env_file and env_file.exists():
+        cmd.extend(["--env-file", str(env_file)])
+    cmd.extend(["up", "-d"])
+
     try:
         process = await asyncio.create_subprocess_exec(
-            "docker",
-            "compose",
-            "-f",
-            str(compose_path),
-            "up",
-            "-d",
+            *cmd,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
         )

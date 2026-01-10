@@ -489,7 +489,8 @@ async def run_setup_wizard() -> None:
     if Confirm.ask("Start Docker stack (PostgreSQL, Redis)?", default=True):
         from scripts.setup.docker_setup import run_migrations, start_docker_stack, wait_for_services
 
-        result = await start_docker_stack()
+        console.print("  [dim]Starting Docker containers (first run downloads ~500MB, may take a few minutes)...[/dim]")
+        result = await start_docker_stack(env_file=env_path)
         if result["success"]:
             console.print("  [green]OK[/green] Docker stack started")
 
