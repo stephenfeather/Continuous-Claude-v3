@@ -27,6 +27,7 @@
   - [Math System](#math-system)
 - [Workflows](#workflows)
 - [Installation](#installation)
+- [Updating](#updating)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 - [License](#license)
@@ -949,7 +950,7 @@ uv run python -m scripts.setup.wizard
 
 The wizard walks you through all configuration options interactively.
 
-### Updating
+## Updating
 
 Pull latest changes and sync your installation:
 
