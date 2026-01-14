@@ -40,9 +40,12 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
 import os
 import sys
 from datetime import datetime, timezone
+
+logger = logging.getLogger(__name__)
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -125,9 +128,13 @@ async def store_learning_v2(
         try:
             embedder = EmbeddingService(provider=embedding_provider)
             embedding = await embedder.embed(content)
-        except Exception:
+        except Exception as e:
             # Fallback to local if Ollama unavailable
             if embedding_provider != "local":
+                logger.warning(
+                    f"Primary embedding provider '{embedding_provider}' failed: {e}. "
+                    "Falling back to local."
+                )
                 embedder = EmbeddingService(provider="local")
                 embedding = await embedder.embed(content)
             else:
